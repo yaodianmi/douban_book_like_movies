@@ -29,8 +29,6 @@ export default class BookScreen extends Component {
   }
 
   render() {
-    let tagsText = this._tagsToText();
-
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.mainSection}>
@@ -53,7 +51,6 @@ export default class BookScreen extends Component {
           {this.props.book.summary}
         </Text>
         <View style={styles.separator} />
-        <Text>{tagsText}</Text>
         <Tags
           key={this.props.book.id}
           tags={this.props.book.tags}
@@ -95,7 +92,7 @@ class Tags extends Component {
       <View>
         {this.props.tags.map(tag =>
           <TagCell
-            key={tag.id}
+            key={tag.name}
             onSelect={() => this.selectTag(tag)}
             tag={tag}
           />
