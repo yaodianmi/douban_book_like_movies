@@ -90,10 +90,7 @@ export default class SearchScreen extends Component {
 
   componentWillMount() {
     if (this.props.tag) {
-      alert(this.props.tag.name);
-      this.setState({
-        filter: this.props.tag.name,
-      });
+      this.searchBooks(this.props.tag.name);
     }
   }
 

@@ -10,32 +10,20 @@ import {
 } from 'react-native';
 
 export default class SearchBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      filter: '',
-    }
-  }
-
-  componentWillMount() {
-    if (this.props.filter) {
-      this.setState({
-        filter: this.props.filter,
-      });
-      alert(this.state.filter);
-    }
-  }
-
   render() {
+    let placeholderText = "请输入搜索关键词..."
+    if (this.props.filter) {
+      placeholderText = `${this.props.filter}`;
+    }
+
     return (
       <View style={styles.searchBar}>
         <TextInput
-          value={this.state.filter}
           ref="searchBar"
           autoCapitalize="none"
           autoCorrect={false}
           onChange={this.props.onSearchChange}
-          placeholder="请输入搜索关键词..."
+          placeholder={placeholderText}
           onFocus={this.props.onFocus}
           style={styles.searchBarInput}
         />
