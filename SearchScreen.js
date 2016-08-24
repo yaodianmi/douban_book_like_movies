@@ -90,7 +90,7 @@ export default class SearchScreen extends Component {
 
   componentWillMount() {
     if (this.props.tag) {
-      this.searchBooks(this.props.tag.name);
+      this.searchBooks(this.props.tag.name, 'tag');
     }
   }
 
@@ -98,14 +98,20 @@ export default class SearchScreen extends Component {
     return this.state.dataSource.cloneWithRows(books);
   }
 
-  _urlForQuery(query, start) {
-    return (
-      DOUBAN_DATA['request_url'] + '?q=' + query + '&start=' + start + '&count=10'
-    );
+  _urlForQuery(query, start, type='q') {
+    if (type == 'q') {
+      return (
+        DOUBAN_DATA['request_url'] + '?q=' + query + '&start=' + start + '&count=10'
+      );
+    } else if (type == 'tag') {
+      return (
+        DOUBAN_DATA['request_url'] + '?tag=' + query + '&start=' + start + '&count=10'
+      );
+    }
   }
 
-  _fetch(query, start) {
-    fetch(this._urlForQuery(query, start))
+  _fetch(query, start, type='q') {
+    fetch(this._urlForQuery(query, start, type))
       .then((response) => response.json())
       .then((responseJson) => {
         LOADING[query] = false;
@@ -135,7 +141,7 @@ export default class SearchScreen extends Component {
       });
   }
 
-  searchBooks(query) {
+  searchBooks(query, type='q') {
     this.setState({filter: query});
 
     var cachedResultsForQuery = resultsCache.dataForQuery[query];
@@ -160,7 +166,7 @@ export default class SearchScreen extends Component {
     });
 
     if (query.trim()) {
-      this._fetch(query, 0);
+      this._fetch(query, 0, type);
     } else {
       this.setState({
         dataSource: this.getDataSource([]),
@@ -179,8 +185,8 @@ export default class SearchScreen extends Component {
     });
   }
 
-  _fetchNext(query, start) {
-    fetch(this._urlForQuery(query, start))
+  _fetchNext(query, start, type='q') {
+    fetch(this._urlForQuery(query, start, type))
       .then((response) => response.json())
       .catch((error) => {
         console.error(error);
@@ -219,6 +225,7 @@ export default class SearchScreen extends Component {
 
   onEndReached() {
     let query = this.state.filter;
+
     if (!this.hasMore() || this.state.isLoadingTail) {
       // We're already fetching or have all the elements so noop
       return;
@@ -235,7 +242,11 @@ export default class SearchScreen extends Component {
     });
 
     let start = resultsCache.nextStartForQuery[query];
-    this._fetchNext(query, start);
+    if (this.props.tag) {
+      this._fetchNext(query, start, 'tag');
+    } else {
+      this._fetchNext(query, start);
+    }
   }
 
   selectBook(book) {
@@ -289,9 +300,6 @@ export default class SearchScreen extends Component {
   }
 
   renderRow(book, sectionID, rowID, highlightRowFunc) {
-    //alert(this.state.is8Star);
-    //alert(book.rating.average);
-    console.log(book);
     if(this.state.is8Star && book.rating.average < 8.0){
       return false;
     } else {
@@ -317,6 +325,7 @@ export default class SearchScreen extends Component {
       /> :
       <ListView
         ref="listview"
+        is8Star={this.state.is8Star}
         renderSeparator={this.renderSeparator}
         dataSource={this.state.dataSource}
         renderFooter={this.renderFooter}
@@ -363,7 +372,6 @@ const styles = StyleSheet.create({
     width: 153,
     height: 30,
     marginTop: 70,
-    alignItems: 'center',
   },
   separator: {
     height: 1,
