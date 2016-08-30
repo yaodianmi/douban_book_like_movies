@@ -1,2 +1,4 @@
-# douban_book_like_movies
-study react-native/Examples/Movies for douban search books
+# DoubanBookRnRedux
+The study for redux with react naitve.
+
+like https://github.com/yaodianmi/douban_book_like_movies
